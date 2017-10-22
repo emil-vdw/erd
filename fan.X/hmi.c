@@ -275,4 +275,5 @@ void high_priority interrupt High_Priority_Interrupt(void)
                 break;
         }
     }
+    return;
 }
