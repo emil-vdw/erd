@@ -33,6 +33,7 @@
 #define	XC_HEADER_TEMPLATE_H
 
 #include <xc.h> // include processor files - each processor file is guarded.  
+#include <string.h>
 
 void serialSetup()
 {
@@ -44,9 +45,9 @@ void serialSetup()
     BAUDCONbits.BRG16 =0;
     
     SPBRG = 12; //Baud rate of 9600 bps
-    PIE1.RCIE = 1;
-    INTCON.GIE = 1;
-    INTCON.PEIE = 1;
+    PIE1bits.RCIE = 1;
+    INTCONbits.GIE = 1;
+    INTCONbits.PEIE = 1;
 }
 
 void SerialTransmit(const char *buffer)

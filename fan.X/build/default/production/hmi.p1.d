@@ -4,4 +4,5 @@
 I2C.h  \
 hmi.h  \
 lcd.h  \
-sensors.h 
+sensors.h  \
+serial.h 

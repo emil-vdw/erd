@@ -4172,6 +4172,77 @@ extern __nonreentrant void _delay3(unsigned char);
 # 4 "/opt/microchip/xc8/v1.44/include/__size_t.h"
 typedef unsigned size_t;
 
+# 14 "/opt/microchip/xc8/v1.44/include/string.h"
+extern void * memcpy(void *, const void *, size_t);
+extern void * memmove(void *, const void *, size_t);
+extern void * memset(void *, int, size_t);
+
+# 36
+extern char * strcat(char *, const char *);
+extern char * strcpy(char *, const char *);
+extern char * strncat(char *, const char *, size_t);
+extern char * strncpy(char *, const char *, size_t);
+extern char * strdup(const char *);
+extern char * strtok(char *, const char *);
+
+
+extern int memcmp(const void *, const void *, size_t);
+extern int strcmp(const char *, const char *);
+extern int stricmp(const char *, const char *);
+extern int strncmp(const char *, const char *, size_t);
+extern int strnicmp(const char *, const char *, size_t);
+extern void * memchr(const void *, int, size_t);
+extern size_t strcspn(const char *, const char *);
+extern char * strpbrk(const char *, const char *);
+extern size_t strspn(const char *, const char *);
+extern char * strstr(const char *, const char *);
+extern char * stristr(const char *, const char *);
+extern char * strerror(int);
+extern size_t strlen(const char *);
+extern char * strchr(const char *, int);
+extern char * strichr(const char *, int);
+extern char * strrchr(const char *, int);
+extern char * strrichr(const char *, int);
+
+# 38 "serial.h"
+void serialSetup()
+{
+TRISCbits.RC6=0;
+TRISCbits.RC7=1;
+TXSTA = 0b00100000;
+RCSTA = 0b10010000;
+
+BAUDCONbits.BRG16 =0;
+
+SPBRG = 12;
+PIE1bits.RCIE = 1;
+INTCONbits.GIE = 1;
+INTCONbits.PEIE = 1;
+}
+
+void SerialTransmit(const char *buffer)
+{
+
+unsigned int size = strlen(buffer);
+
+while(size)
+{
+while(TXIF);
+TXREG = *buffer;
+
+buffer++;
+size--;
+}
+
+while( !TRMT);
+}
+
+char SerialReceive()
+{
+while(!RCIF);
+return RCREG;
+}
+
 # 7 "/opt/microchip/xc8/v1.44/include/stdarg.h"
 typedef void * va_list[1];
 
@@ -4301,39 +4372,10 @@ extern char * ultoa(char * buf, unsigned long val, int base);
 
 extern char * ftoa(float f, int * status);
 
-# 14 "/opt/microchip/xc8/v1.44/include/string.h"
-extern void * memcpy(void *, const void *, size_t);
-extern void * memmove(void *, const void *, size_t);
-extern void * memset(void *, int, size_t);
-
-# 36
-extern char * strcat(char *, const char *);
-extern char * strcpy(char *, const char *);
-extern char * strncat(char *, const char *, size_t);
-extern char * strncpy(char *, const char *, size_t);
-extern char * strdup(const char *);
-extern char * strtok(char *, const char *);
-
-
-extern int memcmp(const void *, const void *, size_t);
-extern int strcmp(const char *, const char *);
-extern int stricmp(const char *, const char *);
-extern int strncmp(const char *, const char *, size_t);
-extern int strnicmp(const char *, const char *, size_t);
-extern void * memchr(const void *, int, size_t);
-extern size_t strcspn(const char *, const char *);
-extern char * strpbrk(const char *, const char *);
-extern size_t strspn(const char *, const char *);
-extern char * strstr(const char *, const char *);
-extern char * stristr(const char *, const char *);
-extern char * strerror(int);
-extern size_t strlen(const char *);
-extern char * strchr(const char *, int);
-extern char * strichr(const char *, int);
-extern char * strrchr(const char *, int);
-extern char * strrichr(const char *, int);
 
 # 79 "hmi.c"
+#pragma interrupt ISR save=section(".tmpdata"),PROD,section("MATH_DATA")
+
 int mode = 0;
 int speed = 1;
 int state = 1;
@@ -4342,21 +4384,16 @@ void adcToLcd();
 void SerialTransmit(const char *buf);
 char SerialReceive();
 
-# 89
+# 91
 int main(void)
 {
 
-TRISCbits.RC6=0;
-TRISCbits.RC7=1;
-TXSTA = 0b00100000;
-RCSTA = 0b10010000;
 
-BAUDCONbits.BRG16 =0;
 OSCCONbits.IRCF0 = 0;
 OSCCONbits.IRCF1 = 1;
 OSCCONbits.IRCF2 = 1;
 OSCCONbits.SCS1 =1;
-SPBRG = 12;
+
 
 while(1)
 {
@@ -4376,7 +4413,7 @@ ANSEL = 0;
 TRISEbits.TRISE0 = 1;
 int state_old = 0;
 
-# 127
+# 124
 PORTCbits.RC1 = 0;
 InitLCD();
 hmi_out();
@@ -4394,37 +4431,13 @@ while(1)
 adcToLcd();
 delay(100);
 
-# 149
+# 146
 }
 
 
 }
 
-void SerialTransmit(const char *buffer)
-{
-
-unsigned int size = strlen(buffer);
-
-while(size)
-{
-while(TXIF);
-TXREG = *buffer;
-
-buffer++;
-size--;
-}
-
-while( !TRMT);
-}
-
-char SerialReceive()
-{
-while(!RCIF);
-return RCREG;
-}
-
-
-
+# 155
 void adcToLcd()
 {
 clear_lcd();
@@ -4531,5 +4544,22 @@ return;
 }
 hmi_out();
 delay(100);
+return;
+}
+
+
+void high_priority interrupt High_Priority_Interrupt(void)
+{
+unsigned char tempChar;
+if(PIR1bits.RCIF)
+{
+tempChar = RCREG;
+switch(tempChar)
+{
+case 'u':
+SerialTransmit('i');
+break;
+}
+}
 return;
 }
