@@ -69,12 +69,14 @@
 #include "sensors.h"
 #include "lcd.h"
 #include "I2C.h"
+#include "serial.h"
 
 #include <xc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+ #pragma interrupt ISR save=section(".tmpdata"),PROD,section("MATH_DATA")
 
 int mode = 0;
 int speed = 1;
@@ -257,4 +259,20 @@ int get_input(void)
     hmi_out();
     delay(100);
     return;
+}
+
+
+void high_priority interrupt High_Priority_Interrupt(void) 
+{
+    unsigned char tempChar;
+    if(PIR1bits.RCIF)
+    {
+        tempChar = RCREG;
+        switch(tempChar)
+        {
+            case 'u':
+                serialTransmit('i');
+                break;
+        }
+    }
 }
