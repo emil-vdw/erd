@@ -73,7 +73,7 @@ void SerialTransmit(const char *buffer)
 
 void UART_Write(char data)
 {
-  while(!TXSTAbits.TRMT);
+  while(!TXSTAbits.TRMT && PIR1bits.TXIF == 0);
   TXREG = data;
 }
 
