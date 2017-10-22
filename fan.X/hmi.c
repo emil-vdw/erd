@@ -89,17 +89,12 @@ char SerialReceive();
 int main(void) 
 { 
     //*********Serial Communication******************
-    TRISCbits.RC6=0;//tx
-    TRISCbits.RC7=1;//rx
-    TXSTA = 0b00100000;
-    RCSTA = 0b10010000;
     
-    BAUDCONbits.BRG16 =0;
     OSCCONbits.IRCF0 = 0;
-     OSCCONbits.IRCF1 = 1;
-      OSCCONbits.IRCF2 = 1;
-      OSCCONbits.SCS1 =1;
-    SPBRG = 12; //Baud rate of 9600 bps
+    OSCCONbits.IRCF1 = 1;
+    OSCCONbits.IRCF2 = 1;
+    OSCCONbits.SCS1 =1;
+    
 
     while(1)
     {
@@ -151,28 +146,7 @@ int main(void)
     
 } 
 
-void SerialTransmit(const char *buffer)
-{
-    
-     unsigned int size = strlen(buffer);
-     
-     while(size)
-     {
-         while(TXIF);
-          TXREG = *buffer;          
- 
-        buffer++;                   
-        size--;         
-     }
-     
-     while( !TRMT);   
-}
 
-char SerialReceive()
-{
-   while(!RCIF);
-    return RCREG;
-}
 
 
 
