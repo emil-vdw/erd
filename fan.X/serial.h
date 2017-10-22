@@ -53,18 +53,28 @@ void serialSetup()
 void SerialTransmit(const char *buffer)
 {
     
-     unsigned int size = strlen(buffer);
-     
-     while(size)
-     {
-         while(TXIF);
-          TXREG = *buffer;          
- 
-        buffer++;                   
-        size--;         
-     }
-     
-     while( !TRMT);   
+//     unsigned int size = strlen(buffer);
+//     
+//     while(size)
+//     {
+//         while(TXIF);
+//          TXREG = *buffer;          
+// 
+//        buffer++;                   
+//        size--;         
+//     }
+//     
+//     while( !TRMT);   
+    int i;
+    for(i=0;buffer[i]!='\0';i++)
+      UART_Write(buffer[i]);
+
+}
+
+void UART_Write(char data)
+{
+  while(!TXSTAbits.TRMT);
+  TXREG = data;
 }
 
 char SerialReceive()
