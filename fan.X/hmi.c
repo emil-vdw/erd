@@ -105,9 +105,8 @@ int main(void)
     {
      
         while(SerialReceive() != 'u');
-        while(!PIR1bits.TXIF);
-        TXREG = 'p';
-        
+        while(!PIR1bits.TXIF); // COMMENT ADDED HERE
+         TXREG = 'p';        
         //SerialTransmit("u26101000");
 
     }
