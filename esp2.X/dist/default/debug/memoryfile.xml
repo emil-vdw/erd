@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<project>                                  
+  <executable name="dist/default/debug/esp2.X.debug.elf">                 
+    <memory name="program">                 
+      <units>bytes</units>                 
+      <length>33936</length>                 
+      <used>21976</used>                     
+      <free>11960</free>                     
+    </memory>                              
+    <memory name="data">              
+      <units>bytes</units>                 
+      <length>8704</length>                 
+      <used>1384</used>                     
+      <free>7320</free>                     
+    </memory>                              
+  </executable>                            
+</project>                                 
